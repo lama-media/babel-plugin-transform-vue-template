@@ -13,7 +13,10 @@ function toFunction(code, name = '') {
 }
 
 function compilePath(t, path, template) {
-  const { errors, tips, render, staticRenderFns } = compile(template)
+  const { errors, tips, render, staticRenderFns } = compile(template, {
+    preserveWhitespace: false,
+    whitespace: 'condense'
+  })
 
   if (errors.length > 0) {
     errors.forEach(error => console.error(error))
@@ -22,11 +25,20 @@ function compilePath(t, path, template) {
     tips.forEach(tip => console.log(tip))
   }
 
-  const renderFnValue = babelTemplate(stripWith(toFunction(render, 'render')))()
+  const renderFnValue = babelTemplate(stripWith(toFunction(render, 'render')), {
+    syntacticPlaceholders: false,
+    placeholderPattern: false,
+    placeholderWhitelist: null,
+  })()
   renderFnValue.type = 'FunctionExpression'
 
   const staticRenderFnsValue = babelTemplate(
-    stripWith(`[${staticRenderFns.map(fn => toFunction(fn)).join(',')}]`)
+    stripWith(`[${staticRenderFns.map(fn => toFunction(fn)).join(',')}]`),
+    {
+      syntacticPlaceholders: false,
+      placeholderPattern: false,
+      placeholderWhitelist: null,
+    }
   )().expression
 
   path.parentPath.replaceWithMultiple([
