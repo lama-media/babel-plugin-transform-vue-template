@@ -19,6 +19,7 @@ function compilePath(t, path, template) {
   })
 
   if (errors.length > 0) {
+    console.error('Err in',path.hub.file.opts.filename);
     errors.forEach(error => console.error(error))
   }
   if (tips.length > 0) {
